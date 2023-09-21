@@ -1,7 +1,6 @@
 <script setup>
 import {defineProps} from "vue";
 import {useThreadsStore} from "@/store/ThreadsStore";
-import {useForumsStore} from "@/store/ForumsStore";
 import router from "@/router";
 import ThreadEditor from "@/components/ThreadEditor.vue";
 import {usePostsStore} from "@/store/PostsStore";

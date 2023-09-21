@@ -73,35 +73,31 @@ export const useThreadsStore = defineStore('ThreadsStore', {
             return  this.threads.find((thread) => thread.id === id);
         },
         async updateThread({ title, text, threadId }) {
-            console.log("params: ",title,text,threadId)
-            const thread = this.getThread(threadId)
-            console.log("thread in store: ",thread)
+            console.log("params: ", title, text, threadId);
+            const thread = this.getThread(threadId);
             const postsStore = usePostsStore();
             const post = postsStore.getPostById(thread.posts[0]);
-            const newThread = { ...thread, title };
-            const newPost = { ...post, text };
 
-            // SET POST
-            const postsIndex = postsStore.findPostIndex(post.id)
-            if (post.id && postsIndex !== -1) {
-                postsStore[postsIndex] = post;
+            // Update the post directly
+            post.text = text;
+            const postsIndex = postsStore.findPostIndex(post.id);
+            if (postsIndex !== -1) {
+                postsStore.posts[postsIndex] = post;
             } else {
-                postsStore.push(post);
+                console.error("Couldn't find post to update");
             }
-            console.log(postsIndex)
-            console.log("postsStore",postsStore)
 
-            // SET THREAD
+            // Update the thread directly
+            thread.title = title;
             const threadIndex = this.threads.findIndex((t) => t.id === thread.id);
-            if (thread.id && threadIndex !== -1) {
+            if (threadIndex !== -1) {
                 this.threads[threadIndex] = thread;
             } else {
-                this.threads.push(thread);
+                console.error("Couldn't find thread to update");
             }
 
-
-            console.log(newThread)
-            return newThread;
+            return thread;
         },
+
     }
 })
