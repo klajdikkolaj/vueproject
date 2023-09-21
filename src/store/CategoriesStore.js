@@ -1,5 +1,6 @@
 import { defineStore} from "pinia";
 import sourceData from '@/data.json'
+import {findById} from "@/helpers";
 export const useCategoriesStore = defineStore('CategoriesStore', {
     state: ()=>{
         return{
@@ -8,7 +9,7 @@ export const useCategoriesStore = defineStore('CategoriesStore', {
     },
     getters:{
         getCategoryById: (state) => (id) => {
-            return state.categories.find(category => category.id === id);
+            return findById(state.categories,id)
         }
     },
     actions:{}

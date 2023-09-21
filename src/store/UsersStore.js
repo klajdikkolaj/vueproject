@@ -2,6 +2,7 @@ import { defineStore} from "pinia";
 import sourceData from '@/data.json'
 import {useAuthStore} from "@/store/AuthStore";
 import router from "@/router";
+import {findById} from "@/helpers";
 export const useUsersStore = defineStore('UsersStore', {
     state: ()=>{
 
@@ -17,7 +18,7 @@ export const useUsersStore = defineStore('UsersStore', {
         getAuthUser: (state) => {
             if (!state.authUser) {
                 const authUserID = useAuthStore().authId;
-                state.authUser = sourceData.users.find(user => user.id === authUserID);
+                state.authUser = findById(sourceData.users,authUserID)
             }
             return state.authUser;
         }
@@ -26,7 +27,7 @@ export const useUsersStore = defineStore('UsersStore', {
     actions: {
 
         async updateUser(updatedUserData) {
-            const user = await this.users.find(u => u.id === updatedUserData.id)
+            const user = await findById(this.users,updatedUserData.id)
             if (user) {
                 Object.assign(user, updatedUserData)
                 try {

@@ -12,7 +12,7 @@ const props = defineProps({
 })
 const title = ref(props.title);
 const text = ref(props.text);
-
+const existTitle = !!title.value
 const emit = defineEmits(["save"]);
 
 function save() {
@@ -48,7 +48,7 @@ function save() {
     <div class="btn-group">
       <button @click.prevent="$emit('cancel')" class="btn btn-ghost">Cancel</button>
       <button class="btn btn-blue" type="submit" name="Publish">
-        Publish
+        {{ existTitle ? 'Update' : 'Publish' }}
       </button>
     </div>
   </form>

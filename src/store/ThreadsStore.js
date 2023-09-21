@@ -5,6 +5,7 @@ import {usePostsStore} from "@/store/PostsStore";
 import {useUsersStore} from "@/store/UsersStore";
 import {useForumsStore} from "@/store/ForumsStore";
 import router from "@/router";
+import {navigateToThread, updateOrAppend} from "@/helpers";
 export const useThreadsStore = defineStore('ThreadsStore', {
     state: ()=>{
         return{
@@ -44,58 +45,34 @@ export const useThreadsStore = defineStore('ThreadsStore', {
 
             // (SET THREAD) add thread to threads
             const threadIndex = this.threads.findIndex((t) => t.id === thread.id);
+            const usersStore = useUsersStore();
+
+
             if (thread.id && threadIndex !== -1) {
                 this.threads[threadIndex] = thread;
             } else {
                 this.threads.push(thread);
             }
 
-            // (APPEND THREAD TO USER) add thread to the user
-            const usersStore = useUsersStore();
-            const user = usersStore.users.find((user) => user.id === userId);
-            user.threads = user.threads || [];
-            user.threads.push(id);
+            updateOrAppend(this.threads, thread);
+            updateOrAppend(usersStore.users.find(u => u.id === userId).threads, id);
+            updateOrAppend(useForumsStore().threads, id);
 
-            // (APPEND THREAD TO FORUM) add thread to the forum
-            const forums = useForumsStore();
-            forums.threads = forums.threads || [];
-            forums.threads.push(id);
-
-            // (DISPATCH CREATE POST) create the post
-            const {createPost} = usePostsStore();
-            createPost({text, threadId: id});
-
-            try {
-                await router.push({name: 'Thread', params: {id: id}});
-            } catch (error) {
-                console.error("Navigation failed:", error);
-            }
+            await navigateToThread(thread.id)
             return  this.threads.find((thread) => thread.id === id);
         },
         async updateThread({ title, text, threadId }) {
-            console.log("params: ", title, text, threadId);
             const thread = this.getThread(threadId);
             const postsStore = usePostsStore();
             const post = postsStore.getPostById(thread.posts[0]);
 
             // Update the post directly
             post.text = text;
-            const postsIndex = postsStore.findPostIndex(post.id);
-            if (postsIndex !== -1) {
-                postsStore.posts[postsIndex] = post;
-            } else {
-                console.error("Couldn't find post to update");
-            }
-
-            // Update the thread directly
             thread.title = title;
-            const threadIndex = this.threads.findIndex((t) => t.id === thread.id);
-            if (threadIndex !== -1) {
-                this.threads[threadIndex] = thread;
-            } else {
-                console.error("Couldn't find thread to update");
-            }
 
+            updateOrAppend(postsStore.posts, post);
+            updateOrAppend(this.threads, thread);
+            await navigateToThread(threadId)
             return thread;
         },
 

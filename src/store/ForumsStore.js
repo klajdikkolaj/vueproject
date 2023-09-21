@@ -1,9 +1,11 @@
 import { defineStore} from "pinia";
 import sourceData from '@/data.json'
+import {findById} from "@/helpers";
 export const useForumsStore = defineStore('ForumsStore', {
     state: ()=>{
         return{
-            forums: sourceData.forums
+            forums: sourceData.forums,
+            threads: sourceData.threads
         }
     },
     getters: {
@@ -11,7 +13,7 @@ export const useForumsStore = defineStore('ForumsStore', {
             return state.forums.find(f => f.categoryId === id)
         },
         getForumById: (state) => (id) => {
-            return state.forums.find(f => f.id === id)
+            return findById(state.forums,id)
         },
     },
     actions:{}

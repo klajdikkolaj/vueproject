@@ -2,6 +2,7 @@ import { defineStore} from "pinia";
 import sourceData from '@/data.json'
 import {useThreadsStore} from "@/store/ThreadsStore";
 import {useAuthStore} from "@/store/AuthStore";
+import {findById} from "@/helpers";
 export const usePostsStore = defineStore('PostsStore', {
     state: ()=>{
         return{
@@ -20,11 +21,7 @@ export const usePostsStore = defineStore('PostsStore', {
             return this.getUserPosts(userId).length
         },
         getPostById: (state) => (id)=>{
-            const foundPost = state.posts.find(p =>p.id === id)
-            if (!foundPost) {
-                return {}
-            }
-            return foundPost
+            return findById(state.posts,id)
         },
         findPostIndex: (state)=>(postId)=>{
             const postIndex = state.posts.findIndex(p => p.id === postId)

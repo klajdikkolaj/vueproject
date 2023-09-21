@@ -33,6 +33,7 @@ function addPost(eventData) {
   <div v-if="thread" >
 
     <h1>{{ thread.title }}</h1>
+    <router-link :to="{name:'EditThread', params:{threadId:thread.id} }" class="btn btn-green"><button>Edit Thread</button></router-link>
 
     <post-list :posts="threadPosts"></post-list>
     <post-editor @save="addPost"/>
